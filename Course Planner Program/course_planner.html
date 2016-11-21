@@ -1,0 +1,244 @@
+<!doctype html>
+<!-- course planner program for cis 255
+table:
+	internal	(all courses needed for student)		[A]					*Established
+	upper left 	(courses taken)							[T]					*Established
+	upper right (courses needed not already taken)		[A-T]				*Established
+	
+	internal	(all SVSU CS/CIS courses)				[S]					*Established
+	lower left	(courses available to take winter 2017)	[C]					*Established
+	lower right	(not available winter 2017)				[S - c]				*Established
+	
+	http://csis.svsu.edu/~gpcorser/cis255_2016spring/gpcorser/jsontest.html
+	
+-->	
+	
+<html>
+	<body>
+		<h1>Course Planner Template</h1>
+		<input type="radio" name="Courses" id="CS" value ="CS"/> CS
+		<input type="radio" name="Courses" id="CIS" value ="CIS"/> CIS
+		<table border="1">
+			<tr>
+				<td>courses taken <br />
+					entry format is prefix+courseNumber <br />
+					use spaces only between different courses <br/>
+					<input type="text" id="T" />
+				</td>
+				<td>courses needed<br />
+					<input type="text" id="N" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					courses available
+					<br />
+					<select id="id02"></select>
+				</td>
+				<td>
+					courses not available
+					<br />
+					<select id="id03"></select>
+				</td>
+			</tr>
+		</table>
+		<button onclick="showNeeded(CISCourses);">Show Courses Needed</button>
+		<script>
+			//Set default checked radio
+			document.getElementById("CS").checked = true;
+			
+			//Thesse arrays are representative of [A] in the above design, but used for seperate lists
+			//Courses for CIS
+			var CISCourses = new Array();
+			CISCourses[0] = {prefix: "CS",		courseNumber: "105"};
+			CISCourses[1] = {prefix: "CS", 		courseNumber: "116"};
+			CISCourses[2] = {prefix: "MATH",	courseNumber: "103"};
+			CISCourses[3] = {prefix: "CS", 		courseNumber: "146"};
+			CISCourses[4] = {prefix: "MATH", 	courseNumber: "120B"};
+			CISCourses[5] = {prefix: "CS", 		courseNumber: "245"};
+			CISCourses[6] = {prefix: "CIS", 	courseNumber: "255"};
+			CISCourses[7] = {prefix: "CS",		courseNumber: "216"};
+			CISCourses[8] = {prefix: "CIS",		courseNumber: "301"};
+			CISCourses[9] = {prefix: "CIS",		courseNumber: "311"};
+			CISCourses[10] = {prefix: "CIS",	courseNumber: "333"};
+			CISCourses[11] = {prefix: "CIS",	courseNumber: "386"};
+			CISCourses[12] = {prefix: "CIS",	courseNumber: "366"};
+			CISCourses[13] = {prefix: "CIS",	courseNumber: "355"};
+			CISCourses[14] = {prefix: "CIS",	courseNumber: "422"};
+			CISCourses[15] = {prefix: "CIS",	courseNumber: "424"};
+			
+			//Courses for CS
+			var CSCourses= new Array();
+			CSCourses[0] = {prefix: "MATH",		courseNumber: "140"};
+			CSCourses[1] = {prefix: "MATH",		courseNumber: "103"};
+			CSCourses[2] = {prefix: "CS",		courseNumber: "105"};
+			CSCourses[3] = {prefix: "CS",		courseNumber: "146"};
+			CSCourses[4] = {prefix: "CS",		courseNumber: "116"};
+			CSCourses[5] = {prefix: "MATH",		courseNumber: "120A"};
+			CSCourses[6] = {prefix: "CS", 		courseNumber: "245"};
+			CSCourses[7] = {prefix: "CIS",		courseNumber: "255"};
+			CSCourses[8] = {prefix: "CS",		courseNumber: "216"};
+			CSCourses[9] = {prefix: "MATH",		courseNumber: "300"};
+			CSCourses[10] = {prefix: "CIS",		courseNumber: "355"};
+			CSCourses[11] = {prefix: "CIS",		courseNumber: "357"};
+			CSCourses[12] = {prefix: "CS",		courseNumber: "411"};
+			CSCourses[13] = {prefix: "CS", 		courseNumber: "331"};
+			CSCourses[14] = {prefix: "CS",		courseNumber: "316"};
+			CSCourses[15] = {prefix: "CS",		courseNumber: "446"};
+			CSCourses[16] = {prefix: "CS",		courseNumber: "401"};
+			CSCourses[17] = {prefix: "CS",		courseNumber: "451"};
+			CSCourses[18] = {prefix: "CS",		courseNumber: "421"};
+			CSCourses[19] = {prefix: "CS",		courseNumber: "471"};
+			CSCourses[20] = {prefix: "CS",		courseNumber: "461"};
+			
+			//Sort courses
+			//Modified sort, original at http://www.stoimen.com/blog/2010/07/09/friday-algorithms-javascript-bubble-sort/
+			function bubbleSort(a)
+			{
+				var swapped;
+				do {
+					swapped = false;
+					for (var i=0; i < a.length-1; i++) {
+						if (a[i].prefix > a[i+1].prefix || ((a[i].prefix == a[i+1].prefix) && (a[i].courseNumber>a[i+1].courseNumber))) {
+							var temp = a[i];
+							a[i] = a[i+1];
+							a[i+1] = temp;
+							swapped = true;
+						}
+					}
+				} while (swapped);
+			}
+			bubbleSort(CSCourses);
+			bubbleSort(CISCourses);
+			
+			
+			/* Not being used
+			//make an array of courses into one string
+			function stringify(A) {
+				var x = "";
+				for(var i = 0; i < A.length; i++)
+				{
+					x = x + " " + A[i].prefix + A[i].courseNumber;
+				}
+				return x.trim();
+			}
+			*/
+			
+			//returns elements in array, A, that are not in array, T
+			function stringifyExcept(A, T) {
+				var outstring = "";
+				for(var i = 0; i < A.length; i++)
+				{
+					var isInT = false; //flag, if element in A is found in T, set true
+					for (var x = 0; x < T.length; x++)
+					{
+						if ((A[i].prefix + A[i].courseNumber) == T[x])
+							isInT = true;
+					}
+					if (isInT)
+					{
+						A.splice(i, 1);
+					}
+					else
+					{
+						outstring = outstring + " " + A[i].prefix + A[i].courseNumber;
+					}
+				}
+				showAvailable(A);
+				return outstring.trim();
+			}
+			
+			// returns elements in array, A, that are not in array, T
+			// also displays courses available/not available, based on needed courses that are available in the upcoming semmester
+			function showNeeded() {
+				//Select the courses from the proper course catalog
+				if (document.getElementById("CS").checked)
+					A = CSCourses;
+				else if (document.getElementById("CIS").checked)
+					A = CISCourses;
+				
+				//Clear previous lists, if possible - taken from http://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
+				var myNode = document.getElementById("id02");
+				while (myNode.firstChild) {
+					myNode.removeChild(myNode.firstChild);
+				}
+				var myNode = document.getElementById("id03");
+				while (myNode.firstChild) {
+					myNode.removeChild(myNode.firstChild);
+				}
+	
+				var T = document.getElementById("T").value;
+				T = T.toUpperCase().split(' ');
+				for (var i = 0; i < T.length; i++)
+				{
+						document.getElementById("N").value = stringifyExcept(A, T);
+				}
+			}
+			
+			//If element e is in A, returns index, else returns -1
+			function isIn(A, e)
+			{
+				for(var i = 0; i < A.length; i++)
+				{
+					if (A[i].prefix + A[i].courseNumber == e)
+					{
+						return i;
+					}
+				}
+				return -1;
+			}
+			
+			
+			function XMLHTTP(URL, course)
+			{
+				<!-- creates new elements with attributes -->
+				var xmlhttp = new XMLHttpRequest();
+
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						var myArr = JSON.parse(xmlhttp.responseText);
+						if (myArr.courses.length == 0) //If the course doesnt appear, flag as not available
+						{
+							var NotAvailable = document.createElement("option");
+							document.getElementById("id03").appendChild(NotAvailable);
+							NotAvailable.appendChild(document.createTextNode(course));
+						}
+						myFunction(myArr);
+					}
+				};
+				function myFunction(arr) {
+					var out = "";
+					var i;
+					for(i = 0; i < arr.courses.length; i++) {
+						var newP = document.createElement("option");
+						newP.setAttribute("value", i);
+						var newText 
+							= document.createTextNode(arr.courses[i].prefix + " " 
+							+ arr.courses[i].courseNumber + " " 
+							+ arr.courses[i].term + " " 
+							+ arr.courses[i].meetingTimes[0].days + " " 
+							+ arr.courses[i].meetingTimes[0].startTime + " " 
+							+ arr.courses[i].meetingTimes[0].instructor); 
+						document.getElementById("id02").appendChild(newP);
+						newP.appendChild(newText);
+						// out += arr.courses[i].prefix + " " + arr.courses[i].courseNumber + "<br />";
+					}
+					// document.getElementById("id01").innerHTML = out;
+				}
+				xmlhttp.open("GET", URL, true);
+				xmlhttp.send();
+			}
+			
+			//Get courses requests - will not show in order, probably because of the numerous requests?
+			function showAvailable(Needed)
+			{
+				var url;
+				for (var i = 0; i < Needed.length; i++)
+				{
+					url = "https://api.svsu.edu/courses?prefix=" + Needed[i].prefix + "&courseNumber=" + Needed[i].courseNumber + "&term=17/WI";
+					XMLHTTP(url, (Needed[i].prefix + " " + Needed[i].courseNumber));
+				}
+			}
+		</script>
+	</body>
+</html>

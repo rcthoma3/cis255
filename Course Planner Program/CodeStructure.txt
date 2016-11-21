@@ -1,0 +1,19 @@
+table:
+	internal	(all courses needed for student)		[A]
+	upper left 	(courses taken)							[T]
+	upper right (courses needed not already taken)		[A-T]
+	
+	internal	(all SVSU CS/CIS courses)				[S]
+	lower left	(courses available to take winter 2017)	[C]
+	lower right	(not available winter 2017)				[S - C]
+
+General Structure:
+
+Initialize A based on radio selection
+Allow user input for T
+Parse T
+Subtract Parsed T from A-T
+Query S for T
+	If T not found in S, mark not available (S-C)
+	IF T found in S, mark available (C)
+Display T, A-T, C, and S-C

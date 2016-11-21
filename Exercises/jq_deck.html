@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script>
+			$(document).ready(function(){
+				$("#boardWidthIn, #boardLengthIn").keyup(function(){
+					document.getElementById("boardlength").innerHTML = parseFloat(document.getElementById("boardLengthIn").value)
+					document.getElementById("boardwidth").innerHTML = parseFloat(document.getElementById("boardWidthIn").value)
+				});
+				
+				$("#length, #width").keyup(function(){
+					//Area of deck
+					var length = parseFloat($("#length").val());
+					var width = parseFloat($("#width").val());
+					var area = length * width;
+					
+					//Assume boards are 8x1 - calculate area of board
+					var boardLength = document.getElementById("boardlength").innerHTML;
+					boardLength = parseFloat(boardLength);
+					var boardWidth = document.getElementById("boardwidth").innerHTML;
+					boardWidth = parseFloat(boardWidth);
+					var boardArea = boardLength*boardWidth;	
+					
+					//Calculate # of boards
+					var boards = area / boardArea;
+					
+					//Output boards needed
+					document.getElementById("numberofboards").innerHTML = boards;
+				});
+			});
+		</script>
+	</head>
+	<body>	
+		<h1>Calculate Materials for Deck</h1>
+		<form>	
+			Input Length: <input type="text" id="length" />
+			Input Board Length: <input type="text" id="boardLengthIn" value="8"/>
+			<br />
+			Input Width: <input type="text" id="width" />
+			Input Board Width: <input type="text" id="boardWidthIn" value="1"/>
+			<br/>
+			<!--Assume boards are 8x1-->
+			<br />
+			Your boards are <span id="boardlength">8</span> ft. long by <span id="boardwidth">1</span> ft. wide.
+			<br />
+			You need <span id="numberofboards">__</span> boards.
+		</form>
+	</body>
+
+	</body>
+</html>
+

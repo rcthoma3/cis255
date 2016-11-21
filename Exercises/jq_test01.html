@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<span>1. this is a span </span> <br />
+		<p class="intro">2. This is a <span class="intro">para 2a.</span></p>
+		<div>3. this is a div </div>
+		<script>
+			//This code hides any paragraph, <p>, that is clicked
+			$(document).ready(function(){
+				$("p").click(function(){
+					$(this).hide();
+				});
+				/*$("#input1").mouseenter(function(){
+					alert("You entered an input#1!");
+				});
+				*/
+				$("#length, #width").keyup(function(){
+					document.getElementById("area").innerHTML = document.getElementById("length").value * document.getElementById("width").value;
+				});
+				$("#Fahrenheit").keyup(function(){
+					document.getElementById("Celsius").value = ((document.getElementById("Fahrenheit").value - 32) / 1.8).toFixed(2);
+				});
+				$("#Celsius").keyup(function(){
+					document.getElementById("Fahrenheit").value = ((document.getElementById("Celsius").value * 1.8) + 32).toFixed(2);
+				});
+			});
+			
+			//The second div does not hide when clicked because the second div was not loaded before the jquery was executed
+			$("div").click(function(){
+				$(this).hide();
+			});
+			
+			//If any span is clicked, all elements are hidden
+			$("span").click(function(){
+				$("*").hide();
+			});
+			
+			//If any div is clicked then any paragraph of class "intro" is also hidden
+			$("div").click(function(){
+				$("p .intro").hide();
+			});
+			
+			//In-class assignment: create two input boxes, celsius and fahrenheit. create jquery code which converts the value in the celsius to fahrenheit whenever the celsius is changed by the user. do the same for the fahernheit box. 
+
+
+			
+		</script>
+		<p>4. this is another para</p>
+		<div> 5. this is a div </div>
+		6. input: <input type="text" id="input1" /> <br/> <br/> <br/>
+		7. input length: <input type="text" id="length"/> <br/>
+		8. input width: <input type="text" id="width"/> <br/>
+		9. output area: <span id="area">Not Set</span> <br/> <br/> <br/>
+		10. fahrenheit: <input type="text" id="Fahrenheit"/> <br/>
+		11. celsius: <input type="text" id="Celsius"/> <br/>
+	</body>
+</html>
